@@ -12,6 +12,7 @@ class Client {
 public:
   void load_account();
 
+  // API Definitions
   cpr::Response get_backends_info();
 
 private:
