@@ -4,21 +4,29 @@
 #include "client.hpp"
 
 int main(int argc, char **argv) {
-  // cpr::Response r =
-  // cpr::Get(cpr::Url{"https://api.github.com/repos/whoshuu/cpr/contributors"},
-  //                   cpr::Authentication{"user", "pass",
-  //                   cpr::AuthMode::BASIC}, cpr::Parameters{{"anon", "true"},
-  //                   {"key", "value"}});
-  // std::cout << r.status_code << std::endl;                  // 200
-  // std::cout << r.header["content-type"] << std::endl;       //
-  // application/json; charset=utf-8 std::cout << r.text << std::endl; // JSON
-  // text string
-
-  auto client = quafu::Client();
+  auto &client = quafu::Client::get_instance();
   client.load_account();
-  auto r = client.get_backends_info();
-  std::cout << r.status_code << std::endl;
-  std::cout << r.text << std::endl;
+
+  if (argc > 1) {
+    std::string qasm_path = argv[1];
+    std::ifstream qasm(qasm_path);
+    std::stringstream buffer;
+
+    if (qasm) {
+      buffer << qasm.rdbuf();
+      qasm.close();
+      std::string qasm_str = buffer.str();
+      auto r = client.execute(qasm_str);
+      std::cout << r.status_code << std::endl;
+      std::cout << r.text << std::endl;
+    } else {
+      std::cerr << "Unable to open file: " << argv[1] << std::endl;
+    }
+  }
+
+  // auto r = client.get_backends_info();
+  // std::cout << r.status_code << std::endl;
+  // std::cout << r.text << std::endl;
 
   return 0;
 }

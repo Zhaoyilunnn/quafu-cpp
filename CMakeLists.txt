@@ -1,10 +1,18 @@
 cmake_minimum_required(VERSION 3.27)
 
+
+##### General settings #####
 project(quafu-cpp)
-
-
 set(CMAKE_CXX_STANDARD 20)
+set(QUAFU_VERSION "0.4.0")
+set(LIB_DIR src)
+set(UTIL_DIR src/utils)
 
+if(NOT BUILD_DIR)
+    set(BUILD_DIR build)
+endif()
+
+configure_file(${UTIL_DIR}/config.hpp.in ${UTIL_DIR}/config.hpp)
 
 
 ##### Dependencies #####
@@ -23,10 +31,11 @@ FetchContent_MakeAvailable(json)
 
 
 
-##### Main project #####
+##### Compilation settings #####
 set(BINTARGET quafupp)
 
-include_directories(src)
+include_directories(${LIB_DIR})
+include_directories(${BUILD_DIR}/src/utils)
 
 add_executable(${BINTARGET} src/main.cpp)
 
