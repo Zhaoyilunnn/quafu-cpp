@@ -24,10 +24,26 @@ FetchContent_MakeAvailable(cpr)
 
 
 # nlohmann-json
-include(FetchContent)
-
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
 FetchContent_MakeAvailable(json)
+
+# absl
+FetchContent_Declare(abseil-cpp URL https://github.com/abseil/abseil-cpp/archive/refs/tags/20230802.1.zip)
+FetchContent_MakeAvailable(abseil-cpp)
+
+
+# Quantum++: https://github.com/softwareQinc/qpp/blob/main/INSTALL.md
+find_package(qpp REQUIRED)
+
+
+# Google test
+FetchContent_Declare(
+  googletest
+  # Specify the commit you depend on and update it regularly.
+  URL https://github.com/google/googletest/archive/5376968f6948923e2411081fd9372e71a59d8e77.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 
 
@@ -41,3 +57,34 @@ add_executable(${BINTARGET} src/main.cpp)
 
 target_link_libraries(${BINTARGET} PRIVATE cpr::cpr)
 target_link_libraries(${BINTARGET} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${BINTARGET} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${BINTARGET} PUBLIC absl::strings)
+
+
+
+##### Unit test settings #####
+enable_testing()
+
+
+# Gates test
+set(GATETEST gate_test)
+set(CIRCUITTEST circuit_test)
+
+add_executable(${GATETEST} test/gate_test.cpp)
+add_executable(${CIRCUITTEST} test/circuit_test.cpp)
+
+target_link_libraries(${GATETEST} PRIVATE cpr::cpr)
+target_link_libraries(${GATETEST} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${GATETEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${GATETEST} PUBLIC absl::strings)
+target_link_libraries(${GATETEST} PUBLIC gtest_main)
+target_link_libraries(${CIRCUITTEST} PRIVATE cpr::cpr)
+target_link_libraries(${CIRCUITTEST} PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(${CIRCUITTEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${CIRCUITTEST} PUBLIC absl::strings)
+target_link_libraries(${CIRCUITTEST} PUBLIC gtest_main)
+
+
+include(GoogleTest)
+gtest_discover_tests(${GATETEST})
+gtest_discover_tests(${CIRCUITTEST})

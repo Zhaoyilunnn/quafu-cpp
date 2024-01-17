@@ -14,7 +14,7 @@ class Client {
 
 public:
   static Client &get_instance() {
-    static Client instance;
+    static Client instance; // For lazy initialization
     return instance;
   }
 

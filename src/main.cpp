@@ -1,6 +1,7 @@
 #include <cpr/cpr.h>
 #include <iostream>
 
+#include "circuit.hpp"
 #include "client.hpp"
 
 int main(int argc, char **argv) {
