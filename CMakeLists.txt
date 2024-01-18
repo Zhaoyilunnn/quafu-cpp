@@ -48,17 +48,17 @@ FetchContent_MakeAvailable(googletest)
 
 
 ##### Compilation settings #####
-set(BINTARGET quafupp)
+set(BIN quafu++)
 
 include_directories(${LIB_DIR})
 include_directories(${BUILD_DIR}/src/utils)
 
-add_executable(${BINTARGET} src/main.cpp)
+add_executable(${BIN} src/main.cpp)
 
-target_link_libraries(${BINTARGET} PRIVATE cpr::cpr)
-target_link_libraries(${BINTARGET} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${BINTARGET} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${BINTARGET} PUBLIC absl::strings)
+target_link_libraries(${BIN} PUBLIC cpr::cpr)
+target_link_libraries(${BIN} PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(${BIN} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${BIN} PUBLIC absl::strings)
 
 
 
@@ -67,24 +67,24 @@ enable_testing()
 
 
 # Gates test
-set(GATETEST gate_test)
-set(CIRCUITTEST circuit_test)
+set(OP_TEST operation_test)
+set(CIRCUIT_TEST circuit_test)
 
-add_executable(${GATETEST} test/gate_test.cpp)
-add_executable(${CIRCUITTEST} test/circuit_test.cpp)
+add_executable(${OP_TEST} test/operation_test.cpp)
+add_executable(${CIRCUIT_TEST} test/circuit_test.cpp)
 
-target_link_libraries(${GATETEST} PRIVATE cpr::cpr)
-target_link_libraries(${GATETEST} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${GATETEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${GATETEST} PUBLIC absl::strings)
-target_link_libraries(${GATETEST} PUBLIC gtest_main)
-target_link_libraries(${CIRCUITTEST} PRIVATE cpr::cpr)
-target_link_libraries(${CIRCUITTEST} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${CIRCUITTEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${CIRCUITTEST} PUBLIC absl::strings)
-target_link_libraries(${CIRCUITTEST} PUBLIC gtest_main)
+target_link_libraries(${OP_TEST} PUBLIC cpr::cpr)
+target_link_libraries(${OP_TEST} PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(${OP_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${OP_TEST} PUBLIC absl::strings)
+target_link_libraries(${OP_TEST} PUBLIC gtest_main)
+target_link_libraries(${CIRCUIT_TEST} PUBLIC cpr::cpr)
+target_link_libraries(${CIRCUIT_TEST} PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(${CIRCUIT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${CIRCUIT_TEST} PUBLIC absl::strings)
+target_link_libraries(${CIRCUIT_TEST} PUBLIC gtest_main)
 
 
 include(GoogleTest)
-gtest_discover_tests(${GATETEST})
-gtest_discover_tests(${CIRCUITTEST})
+gtest_discover_tests(${OP_TEST})
+gtest_discover_tests(${CIRCUIT_TEST})

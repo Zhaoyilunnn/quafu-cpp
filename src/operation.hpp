@@ -9,13 +9,14 @@
 
 namespace quafu {
 
-class Gates {
+class Op {
 
 public:
-  Gates() {}
-  Gates(const std::string &name, const std::vector<int> &positions,
-        const std::vector<double> &params = {})
-      : name(name), positions(positions), params(params) {}
+  Op() {}
+  Op(const std::string &name, const std::vector<uint32_t> &qubits,
+     const std::vector<uint32_t> &clbits = {},
+     const std::vector<double> &params = {})
+      : name(name), qubits(qubits), clbits(clbits), params(params) {}
 
   const std::string to_qasm() const;
 
@@ -38,14 +39,28 @@ public:
 
   std::string name = "";
   std::string symbol = "";
-  std::vector<int> positions{};
+  std::vector<uint32_t> clbits{};
+  std::vector<uint32_t> qubits{};
   std::vector<double> params{};
 };
 
-const std::string Gates::to_qasm() const {
+const std::string Op::to_qasm() const {
+
+  // Measurements
+  if (0 == std::strcmp(this->name.c_str(), "Measure")) {
+    // TODO(): Exception check clbits size equal qubits
+    std::string qasm_str = "";
+    for (size_t i = 0; i < qubits.size(); i++) {
+      qasm_str += "measure q[" + absl::StrCat(this->qubits[i]) + "] -> meas[" +
+                  absl::StrCat(this->clbits[i]) + "];";
+      qasm_str = i == qubits.size() - 1 ? qasm_str : qasm_str + "\n";
+    }
+    return qasm_str;
+  }
+
+  // Gate operations
   std::string qasm_str = this->name;
   absl::AsciiStrToLower(&qasm_str);
-
   std::vector<std::string> str_vec;
   if (!this->params.empty()) {
     for (const auto &v : this->params) {
@@ -57,10 +72,10 @@ const std::string Gates::to_qasm() const {
   qasm_str += " ";
 
   str_vec.clear();
-  for (const auto &p : this->positions) {
+  for (const auto &p : this->qubits) {
     str_vec.push_back("q[" + absl::StrCat(p) + "]");
   }
-  qasm_str += absl::StrJoin(str_vec, ",");
+  qasm_str += absl::StrJoin(str_vec, ",") + ";";
   return qasm_str;
 }
 
