@@ -6,5 +6,5 @@ mkdir -p ${BUILD_DIR}
 
 cd ${BUILD_DIR}
 cmake ..
-make
+make -j 16
 cd -

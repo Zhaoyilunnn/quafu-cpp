@@ -7,6 +7,7 @@
 int main(int argc, char **argv) {
   auto &client = quafu::Client::get_instance();
   client.load_account();
+  client.set_backend("ScQ-P136");
 
   if (argc > 1) {
     std::string qasm_path = argv[1];
