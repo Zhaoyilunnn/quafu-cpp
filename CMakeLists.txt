@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 
 
 ##### General settings #####
-project(quafu-cpp)
+project(quafu_cpp)
 set(CMAKE_CXX_STANDARD 20)
 set(QUAFU_VERSION "0.4.0")
 set(INCLUDE_DIR include)
