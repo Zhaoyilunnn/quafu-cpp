@@ -52,6 +52,7 @@ set(QUAFU_NAMESPACE quafu::)
 add_library(${PROJECT_NAME} STATIC src/client.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${BUILD_DIR}/include/quafu/utils)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC cpr::cpr)
 target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)

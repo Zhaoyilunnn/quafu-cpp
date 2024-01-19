@@ -1,8 +1,8 @@
 #include <cpr/cpr.h>
 #include <iostream>
 
-#include "circuit.hpp"
-#include "client.hpp"
+#include "quafu/circuit.hpp"
+#include "quafu/client.hpp"
 
 int main(int argc, char **argv) {
   auto &client = quafu::Client::get_instance();
