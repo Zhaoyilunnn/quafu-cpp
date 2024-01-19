@@ -1,26 +1,12 @@
 # Quafu C++ SDK
 
-## Build and Test
+## Integration
 
-```bash
-mkdir -p build
-cd build
+### CMake
 
-# set -DBUILD_QUAFU_TEST=On To enable building unit tests
-# cmake .. -DBUILD_QUAFU_TEST=On
-cmake ..
-make -j 8
+Since CMake v3.11, [FetchContent](https://cmake.org/cmake/help/v3.11/module/FetchContent.html) can be used to automatically download a release as a dependency at configure time.
 
-# if built wiht unit tests
-# run unit tests through `make test`
-```
-
-## Usage
-
-### Integration with cmake
-
-Add following configurations in your CMakeLists.txt
-
+Example
 ```cmake
 
 include(FetchContent)
@@ -29,6 +15,13 @@ FetchContent_Declare(quafu-cpp
     GIT_TAG 281e4183d27b0fb4eaca2ee7795af29e98551323) # change this to your target tag
 FetchContent_MakeAvailable(quafu-cpp)
 
+# Link quafu_cpp against your project
 target_link_libraries(foo quafu_cpp)
 
 ```
+
+To build unit tests of quafu_cpp, use `-DQUAFU_BUILD_TEST=On`.
+
+Please also refer to [01_Simple](https://github.com/Zhaoyilunnn/quafu-cpp/tree/main/examples/01_simple).
+
+## Usage
