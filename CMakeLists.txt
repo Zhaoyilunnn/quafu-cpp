@@ -5,13 +5,13 @@ cmake_minimum_required(VERSION 3.27)
 project(quafu_cpp)
 set(CMAKE_CXX_STANDARD 20)
 set(QUAFU_VERSION "0.4.0")
-set(INCLUDE_DIR include)
 
 if(NOT BUILD_DIR)
     set(BUILD_DIR build)
 endif()
 
-configure_file(${INCLUDE_DIR}/quafu/utils/config.hpp.in ${CMAKE_BINARY_DIR}/include/config.hpp)
+# Use CMAKE_BINARY_DIR to make sure dependent projects can find it
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/quafu/utils/config.hpp.in ${CMAKE_BINARY_DIR}/include/config.hpp)
 
 ##### Dependencies #####
 # CPR
@@ -46,9 +46,6 @@ FetchContent_MakeAvailable(googletest)
 
 
 ##### Compilation settings #####
-set(QUAFU_TARGETS QuafuTargets)
-set(QUAFU_NAMESPACE quafu::)
-
 add_library(${PROJECT_NAME} STATIC src/client.cpp)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -58,19 +55,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC cpr::cpr)
 target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${QPP_LINK_DEPS} libqpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC absl::strings)
-
-##### Installation settings #####
-# include(GNUInstallDirs)
-# install(TARGETS ${PROJECT_NAME}
-#         EXPORT ${QUAFU_TARGETS}
-#         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-#
-# install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-#
-# install(EXPORT ${QUAFU_TARGETS}
-#         FILE ${QUAFU_TARGETS}.cmake
-#         NAMESPACE ${QUAFU_NAMESPACE}
-#         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 ##### Unit test settings #####
 enable_testing()
@@ -82,8 +66,8 @@ set(CIRCUIT_TEST circuit_test)
 add_executable(${OP_TEST} test/operation_test.cpp)
 add_executable(${CIRCUIT_TEST} test/circuit_test.cpp)
 
-include_directories(${INCLUDE_DIR})
-include_directories(${BUILD_DIR}/include/utils)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_BINARY_DIR}/include)
 
 target_link_libraries(${OP_TEST} PUBLIC cpr::cpr)
 target_link_libraries(${OP_TEST} PUBLIC nlohmann_json::nlohmann_json)
