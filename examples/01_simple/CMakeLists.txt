@@ -14,7 +14,7 @@ endif()
 # Add quafu-cpp to your dependency
 include(FetchContent)
 FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/Zhaoyilunnn/quafu-cpp.git
-                         GIT_TAG e570edeba1b19c889d04fc163cc5002ac1c2159f) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
+                         GIT_TAG 58ba9f5ecc7539685f147fe05113970b2d5f5acc) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
 FetchContent_MakeAvailable(quafu-cpp)
 
 
@@ -23,4 +23,4 @@ set(BIN 01_simple)
 
 add_executable(${BIN} main.cpp)
 
-target_link_libraries(${BIN}  quafu::quafu)
+target_link_libraries(${BIN} quafu_cpp)

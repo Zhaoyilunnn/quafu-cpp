@@ -6,14 +6,12 @@ project(quafu_cpp)
 set(CMAKE_CXX_STANDARD 20)
 set(QUAFU_VERSION "0.4.0")
 set(INCLUDE_DIR include)
-set(UTIL_DIR include/utils)
 
 if(NOT BUILD_DIR)
     set(BUILD_DIR build)
 endif()
 
-configure_file(${UTIL_DIR}/config.hpp.in ${UTIL_DIR}/config.hpp)
-
+configure_file(${INCLUDE_DIR}/quafu/utils/config.hpp.in ${INCLUDE_DIR}/quafu/utils/config.hpp)
 
 ##### Dependencies #####
 # CPR
@@ -48,23 +46,33 @@ FetchContent_MakeAvailable(googletest)
 
 
 ##### Compilation settings #####
-set(QUAFU_TARGET_NAME ${PROJECT_NAME})
+set(QUAFU_TARGETS QuafuTargets)
+set(QUAFU_NAMESPACE quafu::)
 
-include_directories(${INCLUDE_DIR})
-include_directories(${BUILD_DIR}/include/utils)
+add_library(${PROJECT_NAME} STATIC src/client.cpp)
 
-add_library(${QUAFU_TARGET_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE cpr::cpr)
-target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE nlohmann_json::nlohmann_json)
-target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE absl::strings)
+target_link_libraries(${PROJECT_NAME} PUBLIC cpr::cpr)
+target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC absl::strings)
 
-
+##### Installation settings #####
+# include(GNUInstallDirs)
+# install(TARGETS ${PROJECT_NAME}
+#         EXPORT ${QUAFU_TARGETS}
+#         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#
+# install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#
+# install(EXPORT ${QUAFU_TARGETS}
+#         FILE ${QUAFU_TARGETS}.cmake
+#         NAMESPACE ${QUAFU_NAMESPACE}
+#         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
 ##### Unit test settings #####
 enable_testing()
-
 
 # Gates test
 set(OP_TEST operation_test)
@@ -72,6 +80,9 @@ set(CIRCUIT_TEST circuit_test)
 
 add_executable(${OP_TEST} test/operation_test.cpp)
 add_executable(${CIRCUIT_TEST} test/circuit_test.cpp)
+
+include_directories(${INCLUDE_DIR})
+include_directories(${BUILD_DIR}/include/utils)
 
 target_link_libraries(${OP_TEST} PUBLIC cpr::cpr)
 target_link_libraries(${OP_TEST} PUBLIC nlohmann_json::nlohmann_json)
@@ -83,7 +94,6 @@ target_link_libraries(${CIRCUIT_TEST} PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(${CIRCUIT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
 target_link_libraries(${CIRCUIT_TEST} PUBLIC absl::strings)
 target_link_libraries(${CIRCUIT_TEST} PUBLIC gtest_main)
-
 
 include(GoogleTest)
 gtest_discover_tests(${OP_TEST})

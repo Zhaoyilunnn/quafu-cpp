@@ -1,4 +1,4 @@
-#include "circuit.hpp"
+#include "quafu/circuit.hpp"
 #include "gtest/gtest.h"
 
 const std::string SAMPLE_2Q = "OPENQASM 2.0;\n"

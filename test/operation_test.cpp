@@ -1,4 +1,4 @@
-#include "operation.hpp"
+#include "quafu/operation.hpp"
 #include "gtest/gtest.h"
 
 TEST(OpTest, to_qasm) {
