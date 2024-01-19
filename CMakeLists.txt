@@ -57,29 +57,32 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${QPP_LINK_DEPS} libqpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC absl::strings)
 
 ##### Unit test settings #####
-enable_testing()
 
-# Gates test
-set(OP_TEST operation_test)
-set(CIRCUIT_TEST circuit_test)
+if (BUILD_QUAFU_TEST)
+    enable_testing()
 
-add_executable(${OP_TEST} test/operation_test.cpp)
-add_executable(${CIRCUIT_TEST} test/circuit_test.cpp)
+    # Gates test
+    set(OP_TEST operation_test)
+    set(CIRCUIT_TEST circuit_test)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_BINARY_DIR}/include)
+    add_executable(${OP_TEST} test/operation_test.cpp)
+    add_executable(${CIRCUIT_TEST} test/circuit_test.cpp)
 
-target_link_libraries(${OP_TEST} PUBLIC cpr::cpr)
-target_link_libraries(${OP_TEST} PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(${OP_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${OP_TEST} PUBLIC absl::strings)
-target_link_libraries(${OP_TEST} PUBLIC gtest_main)
-target_link_libraries(${CIRCUIT_TEST} PUBLIC cpr::cpr)
-target_link_libraries(${CIRCUIT_TEST} PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(${CIRCUIT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${CIRCUIT_TEST} PUBLIC absl::strings)
-target_link_libraries(${CIRCUIT_TEST} PUBLIC gtest_main)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    include_directories(${CMAKE_BINARY_DIR}/include)
 
-include(GoogleTest)
-gtest_discover_tests(${OP_TEST})
-gtest_discover_tests(${CIRCUIT_TEST})
+    target_link_libraries(${OP_TEST} PUBLIC cpr::cpr)
+    target_link_libraries(${OP_TEST} PUBLIC nlohmann_json::nlohmann_json)
+    target_link_libraries(${OP_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+    target_link_libraries(${OP_TEST} PUBLIC absl::strings)
+    target_link_libraries(${OP_TEST} PUBLIC gtest_main)
+    target_link_libraries(${CIRCUIT_TEST} PUBLIC cpr::cpr)
+    target_link_libraries(${CIRCUIT_TEST} PUBLIC nlohmann_json::nlohmann_json)
+    target_link_libraries(${CIRCUIT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+    target_link_libraries(${CIRCUIT_TEST} PUBLIC absl::strings)
+    target_link_libraries(${CIRCUIT_TEST} PUBLIC gtest_main)
+
+    include(GoogleTest)
+    gtest_discover_tests(${OP_TEST})
+    gtest_discover_tests(${CIRCUIT_TEST})
+endif()

@@ -13,8 +13,9 @@ endif()
 ##### Dependencies #####
 # Add quafu-cpp to your dependency
 include(FetchContent)
-FetchContent_Declare(quafu-cpp GIT_REPOSITORY https://github.com/Zhaoyilunnn/quafu-cpp.git
-                         GIT_TAG 4a99638c2d0f17c3cf6b739cba6725cf643e7b35) # Replace with your desired git commit from: https://github.com/libcpr/cpr/releases
+FetchContent_Declare(quafu-cpp
+    GIT_REPOSITORY https://github.com/Zhaoyilunnn/quafu-cpp.git
+    GIT_TAG 281e4183d27b0fb4eaca2ee7795af29e98551323)
 FetchContent_MakeAvailable(quafu-cpp)
 
 
