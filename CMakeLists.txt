@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.27)
 project(quafu-cpp)
 set(CMAKE_CXX_STANDARD 20)
 set(QUAFU_VERSION "0.4.0")
-set(LIB_DIR src)
-set(UTIL_DIR src/utils)
+set(INCLUDE_DIR include)
+set(UTIL_DIR include/utils)
 
 if(NOT BUILD_DIR)
     set(BUILD_DIR build)
@@ -48,17 +48,17 @@ FetchContent_MakeAvailable(googletest)
 
 
 ##### Compilation settings #####
-set(BIN quafu++)
+set(QUAFU_TARGET_NAME ${PROJECT_NAME})
 
-include_directories(${LIB_DIR})
-include_directories(${BUILD_DIR}/src/utils)
+include_directories(${INCLUDE_DIR})
+include_directories(${BUILD_DIR}/include/utils)
 
-add_executable(${BIN} src/main.cpp)
+add_library(${QUAFU_TARGET_NAME} INTERFACE)
 
-target_link_libraries(${BIN} PUBLIC cpr::cpr)
-target_link_libraries(${BIN} PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(${BIN} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${BIN} PUBLIC absl::strings)
+target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE cpr::cpr)
+target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE nlohmann_json::nlohmann_json)
+target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${QUAFU_TARGET_NAME} INTERFACE absl::strings)
 
 
 
