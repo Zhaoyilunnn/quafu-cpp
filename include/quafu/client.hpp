@@ -2,6 +2,7 @@
 
 #include "config.hpp"
 #include "nlohmann/json.hpp"
+#include "quafu/exceptions.hpp"
 #include "utils/constants.hpp"
 
 #include <cpr/cpr.h>
@@ -12,17 +13,37 @@
 
 namespace quafu {
 
+class ICprWrapper {
+public:
+  virtual ~ICprWrapper() = default;
+  virtual cpr::Response Post(const cpr::Url &url,
+                             const cpr::Header &header) = 0;
+};
+
+class CprWrapper : public ICprWrapper {
+public:
+  cpr::Response Post(const cpr::Url &url, const cpr::Header &header) override {
+    return cpr::Post(url, header);
+  }
+};
+
 class Client {
 
 public:
   static Client &get_instance() {
     static Client instance; // For lazy initialization
+    instance.set_cpr_wrapper(std::make_shared<CprWrapper>());
     return instance;
   }
 
   // Constructors
   Client(Client const &) = delete;         // Delete copy constructor
   void operator=(Client const &) = delete; // Delete assignment constructor
+
+  // Set cpr wrapper, mainly used for unit test
+  void set_cpr_wrapper(const std::shared_ptr<ICprWrapper> &cpr_wrapper) {
+    _cpr_wrapper = cpr_wrapper;
+  }
 
   // Credential managements
   void load_account();
@@ -67,6 +88,10 @@ public:
 private:
   Client() {}
 
+  // Wrapper of CPR
+  std::shared_ptr<ICprWrapper> _cpr_wrapper = nullptr;
+
+  // Call website to get quantum backends information
   void _get_backends();
 
   // Website configuration

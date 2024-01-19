@@ -24,4 +24,8 @@ To build unit tests of quafu_cpp, use `-DQUAFU_BUILD_TEST=On`.
 
 Please also refer to [01_Simple](https://github.com/Zhaoyilunnn/quafu-cpp/tree/main/examples/01_simple).
 
-## Usage
+## Build
+
+```bash
+bash scripts/build.sh
+```

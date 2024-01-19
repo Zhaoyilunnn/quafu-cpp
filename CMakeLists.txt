@@ -33,6 +33,9 @@ FetchContent_MakeAvailable(abseil-cpp)
 # Quantum++: https://github.com/softwareQinc/qpp/blob/main/INSTALL.md
 find_package(qpp REQUIRED)
 
+# gflags: https://gflags.github.io/gflags/#cmake
+add_subdirectory(tpls/glags)
+
 
 # Google test
 FetchContent_Declare(
@@ -56,6 +59,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${QPP_LINK_DEPS} libqpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC absl::strings)
 
+##### Quafu tool #####
+add_executable(quafu++ src/tool.cpp)
+target_link_libraries(quafu++ gflags::gflags)
+
 ##### Unit test settings #####
 
 if (BUILD_QUAFU_TEST)
@@ -64,9 +71,11 @@ if (BUILD_QUAFU_TEST)
     # Gates test
     set(OP_TEST operation_test)
     set(CIRCUIT_TEST circuit_test)
+    set(CLIENT_TEST client_test)
 
     add_executable(${OP_TEST} test/operation_test.cpp)
     add_executable(${CIRCUIT_TEST} test/circuit_test.cpp)
+    add_executable(${CLIENT_TEST} test/client_test.cpp)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     include_directories(${CMAKE_BINARY_DIR}/include)
@@ -81,8 +90,16 @@ if (BUILD_QUAFU_TEST)
     target_link_libraries(${CIRCUIT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
     target_link_libraries(${CIRCUIT_TEST} PUBLIC absl::strings)
     target_link_libraries(${CIRCUIT_TEST} PUBLIC gtest_main)
+    target_link_libraries(${CLIENT_TEST} PUBLIC cpr::cpr)
+    target_link_libraries(${CLIENT_TEST} PUBLIC nlohmann_json::nlohmann_json)
+    target_link_libraries(${CLIENT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
+    target_link_libraries(${CLIENT_TEST} PUBLIC absl::strings)
+    target_link_libraries(${CLIENT_TEST} PUBLIC gtest_main)
+    target_link_libraries(${CLIENT_TEST} PUBLIC gmock_main)
+    target_link_libraries(${CLIENT_TEST} PUBLIC ${PROJECT_NAME})
 
     include(GoogleTest)
     gtest_discover_tests(${OP_TEST})
     gtest_discover_tests(${CIRCUIT_TEST})
+    gtest_discover_tests(${CLIENT_TEST})
 endif()

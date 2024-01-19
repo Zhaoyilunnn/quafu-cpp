@@ -1,0 +1,3 @@
+[submodule "tpls/glags"]
+	path = tpls/glags
+	url = https://github.com/gflags/gflags.git
