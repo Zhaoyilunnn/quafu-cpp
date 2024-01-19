@@ -9,6 +9,16 @@ int main(int argc, char **argv) {
   client.load_account();
   client.set_backend("ScQ-P136");
 
+  auto qc = quafu::Circuit();
+  qc.num_qubits = 2;
+  qc.h(0);
+  qc.x(1);
+  qc.measure();
+
+  auto r = client.execute(qc.to_qasm());
+  std::cout << r.status_code << std::endl;
+  std::cout << r.text << std::endl;
+
   if (argc > 1) {
     std::string qasm_path = argv[1];
     std::ifstream qasm(qasm_path);
