@@ -15,7 +15,7 @@ endif()
 include(FetchContent)
 FetchContent_Declare(quafu-cpp
     GIT_REPOSITORY https://github.com/Zhaoyilunnn/quafu-cpp.git
-    GIT_TAG 281e4183d27b0fb4eaca2ee7795af29e98551323)
+    GIT_TAG main)
 FetchContent_MakeAvailable(quafu-cpp)
 
 

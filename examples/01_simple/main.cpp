@@ -1,4 +1,3 @@
-#include <cpr/cpr.h>
 #include <iostream>
 
 #include "quafu/circuit.hpp"
