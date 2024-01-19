@@ -11,7 +11,7 @@ if(NOT BUILD_DIR)
     set(BUILD_DIR build)
 endif()
 
-configure_file(${INCLUDE_DIR}/quafu/utils/config.hpp.in ${INCLUDE_DIR}/quafu/utils/config.hpp)
+configure_file(${INCLUDE_DIR}/quafu/utils/config.hpp.in ${CMAKE_BINARY_DIR}/include/config.hpp)
 
 ##### Dependencies #####
 # CPR
@@ -51,8 +51,8 @@ set(QUAFU_NAMESPACE quafu::)
 
 add_library(${PROJECT_NAME} STATIC src/client.cpp)
 
-target_include_directories(${PROJECT_NAME} PUBLIC include)
-target_include_directories(${PROJECT_NAME} PUBLIC ${BUILD_DIR}/include/quafu/utils)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC cpr::cpr)
 target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
