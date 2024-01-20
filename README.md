@@ -55,8 +55,7 @@ int main(int argc, char **argv) {
   qc.measure();
 
   auto r = client.execute(qc.to_qasm());
-  std::cout << r.status_code << std::endl;
-  std::cout << r.text << std::endl;
+  std::cout << r.counts() << std::endl;
 
   return 0;
 }

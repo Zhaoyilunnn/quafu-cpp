@@ -14,8 +14,7 @@ int main(int argc, char **argv) {
   qc.measure();
 
   auto r = client.execute(qc.to_qasm());
-  std::cout << r.status_code << std::endl;
-  std::cout << r.text << std::endl;
+  std::cout << r.counts() << std::endl;
 
   if (argc > 1) {
     std::string qasm_path = argv[1];
@@ -27,8 +26,7 @@ int main(int argc, char **argv) {
       qasm.close();
       std::string qasm_str = buffer.str();
       auto r = client.execute(qasm_str);
-      std::cout << r.status_code << std::endl;
-      std::cout << r.text << std::endl;
+      std::cout << r.counts() << std::endl;
     } else {
       std::cerr << "Unable to open file: " << argv[1] << std::endl;
     }

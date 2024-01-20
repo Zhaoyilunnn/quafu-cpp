@@ -51,7 +51,7 @@ const std::string Op::to_qasm() const {
     // TODO(): Exception check clbits size equal qubits
     std::string qasm_str = "";
     for (size_t i = 0; i < qubits.size(); i++) {
-      qasm_str += "measure q[" + absl::StrCat(this->qubits[i]) + "] -> meas[" +
+      qasm_str += "measure q[" + absl::StrCat(this->qubits[i]) + "] -> c[" +
                   absl::StrCat(this->clbits[i]) + "];";
       qasm_str = i == qubits.size() - 1 ? qasm_str : qasm_str + "\n";
     }

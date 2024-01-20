@@ -75,7 +75,7 @@ public:
     std::string qasm_str = "OPENQASM 2.0;\n"
                            "include \"qelib1.inc\";\n";
     qasm_str += "qreg q[" + absl::StrCat(_num_qubits) + "];\n";
-    qasm_str += "creg meas[" + absl::StrCat(_measures.size()) + "];\n";
+    qasm_str += "creg c[" + absl::StrCat(_measures.size()) + "];\n";
 
     for (const auto &g : _ops) {
       qasm_str += g.to_qasm() + "\n";

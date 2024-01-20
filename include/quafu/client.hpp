@@ -3,6 +3,7 @@
 #include "config.hpp"
 #include "nlohmann/json.hpp"
 #include "quafu/exceptions.hpp"
+#include "quafu/result.hpp"
 #include "utils/constants.hpp"
 
 #include <cpr/cpr.h>
@@ -61,8 +62,8 @@ public:
   }
 
   // API Definitions
-  cpr::Response execute(const std::string &qasm, const std::string &name = "",
-                        bool async = false);
+  Result execute(const std::string &qasm, const std::string &name = "",
+                 bool async = false);
 
   // TODO(zhaoyilun): instantiate history?
   // std::vector<std::string> submit_history;
@@ -143,8 +144,8 @@ void Client::_get_backends() {
   }
 }
 
-cpr::Response Client::execute(const std::string &qasm, const std::string &name,
-                              bool async) {
+Result Client::execute(const std::string &qasm, const std::string &name,
+                       bool async) {
   auto backend = _backends[_backend_name];
 
   // Set payload data
@@ -174,7 +175,7 @@ cpr::Response Client::execute(const std::string &qasm, const std::string &name,
   // Send request to website
   auto r = _cpr_wrapper->Post(url, header, payload);
   CHECK_WEBSITE_ERROR(r.status_code);
-  return r;
+  return Result(r.text);
 }
 
 } // namespace quafu
