@@ -18,12 +18,19 @@ public:
   virtual ~ICprWrapper() = default;
   virtual cpr::Response Post(const cpr::Url &url,
                              const cpr::Header &header) = 0;
+  virtual cpr::Response Post(const cpr::Url &url, const cpr::Header &header,
+                             const cpr::Payload &payload) = 0;
 };
 
 class CprWrapper : public ICprWrapper {
 public:
   cpr::Response Post(const cpr::Url &url, const cpr::Header &header) override {
     return cpr::Post(url, header);
+  }
+
+  cpr::Response Post(const cpr::Url &url, const cpr::Header &header,
+                     const cpr::Payload &payload) override {
+    return cpr::Post(url, header, payload);
   }
 };
 
@@ -127,8 +134,9 @@ void Client::load_account() {
 void Client::_get_backends() {
   auto header = cpr::Header{{"api_token", _api_token}};
   auto url = cpr::Url(_website + API_BACKENDS);
-  // auto r = cpr::Post(url, header);
   auto r = _cpr_wrapper->Post(url, header);
+  CHECK_WEBSITE_ERROR(r.status_code);
+  // Populate backend information
   auto backends_json = nlohmann::json::parse(r.text);
   for (const auto &b : backends_json["data"]) {
     _backends.emplace(b["system_name"], b);
@@ -138,10 +146,12 @@ void Client::_get_backends() {
 cpr::Response Client::execute(const std::string &qasm, const std::string &name,
                               bool async) {
   auto backend = _backends[_backend_name];
-  auto data = cpr::Payload{
+
+  // Set payload data
+  auto payload = cpr::Payload{
       {"qtasm", qasm},
       {"shots", std::to_string(this->_shots)},
-      {"qubits", "1"},
+      {"qubits", "1"}, // TODO(): Extract this value from qasm?
       {"scan", "0"},
       {"tomo", std::to_string(static_cast<int>(this->_tomo))},
       {"selected_server",
@@ -151,13 +161,20 @@ cpr::Response Client::execute(const std::string &qasm, const std::string &name,
       {"task_name", name},
       {"pyquafu_version", QUAFU_VERSION},
       {"runtime_job_id", ""}};
+
+  // Choose API based on async flag
   auto url = async ? cpr::Url{_website + API_EXEC_ASYNC}
                    : cpr::Url{_website + API_EXEC};
+
+  // Set header
   auto header = cpr::Header{
       {"Content-Type", "application/x-www-form-urlencoded;charset=UTF-8"},
       {"api_token", _api_token}};
-  // FIXME(): use cpr wrapper
-  return cpr::Post(url, header, data);
+
+  // Send request to website
+  auto r = _cpr_wrapper->Post(url, header, payload);
+  CHECK_WEBSITE_ERROR(r.status_code);
+  return r;
 }
 
 } // namespace quafu

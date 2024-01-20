@@ -8,6 +8,11 @@ class MockCprWrapper : public quafu::ICprWrapper {
 public:
   MOCK_METHOD(cpr::Response, Post,
               (const cpr::Url &url, const cpr::Header &header), (override));
+
+  MOCK_METHOD(cpr::Response, Post,
+              (const cpr::Url &url, const cpr::Header &header,
+               const cpr::Payload &payload),
+              (override));
 };
 
 TEST(ClientTest, load_account) {
@@ -17,6 +22,8 @@ TEST(ClientTest, load_account) {
 
   // Set expected return values
   cpr::Response fake_response;
+
+  // Backend return successfully
   fake_response.status_code = 200;
   fake_response.text =
       "{\"data\": [{\"system_name\": \"ScQ-P10\", \"system_id\": 0}]}";
@@ -24,4 +31,11 @@ TEST(ClientTest, load_account) {
   EXPECT_CALL(*mock_post.get(), Post(testing::_, testing::_))
       .WillOnce(testing::Return(fake_response));
   client.load_account();
+
+  // Website error
+  fake_response.status_code = 503;
+  EXPECT_CALL(*mock_post.get(), Post(testing::_, testing::_))
+      .WillOnce(testing::Return(fake_response));
+
+  ASSERT_THROW(client.load_account(), quafu::BackendException);
 }

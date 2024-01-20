@@ -49,8 +49,7 @@ int main(int argc, char **argv) {
   client.load_account();
   client.set_backend("ScQ-P136");
 
-  auto qc = quafu::Circuit();
-  qc.num_qubits = 2;
+  auto qc = quafu::Circuit(2);
   qc.h(0);
   qc.x(1);
   qc.measure();

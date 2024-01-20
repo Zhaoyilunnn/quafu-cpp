@@ -8,6 +8,16 @@ namespace quafu {
 class Circuit {
 
 public:
+  // Constructors
+  Circuit() {}
+  Circuit(const uint32_t num_qubits) : _num_qubits(num_qubits) {}
+
+  // Attribute setters and getters
+  uint32_t num_qubits() const { return _num_qubits; }
+  const std::vector<std::pair<uint32_t, uint32_t>> &measurements() const {
+    return _measures;
+  }
+
   // Single-qubit gates
   void id(const uint32_t qubit);
   void h(const uint32_t qubit);
@@ -64,59 +74,73 @@ public:
   const std::string to_qasm() const {
     std::string qasm_str = "OPENQASM 2.0;\n"
                            "include \"qelib1.inc\";\n";
-    qasm_str += "qreg q[" + absl::StrCat(this->num_qubits) + "];\n";
-    qasm_str += "creg meas[" + absl::StrCat(this->measures.size()) + "];\n";
+    qasm_str += "qreg q[" + absl::StrCat(_num_qubits) + "];\n";
+    qasm_str += "creg meas[" + absl::StrCat(_measures.size()) + "];\n";
 
     for (const auto &g : _ops) {
       qasm_str += g.to_qasm() + "\n";
     }
 
-    // for (const auto &m : measures) {
-    //   qasm_str += "measure q[" + absl::StrCat(m.first) + "] -> meas[" +
-    //               absl::StrCat(m.second) + "];\n";
-    // }
-
     return qasm_str;
   }
 
-  // Circuit attributes
-  uint32_t num_qubits = 0;
-  std::vector<std::pair<uint32_t, uint32_t>> measures;
-
 private:
-  std::vector<Op> _ops{};
+  uint32_t _num_qubits = 0;                             // number of qubits
+  std::vector<std::pair<uint32_t, uint32_t>> _measures; // measurements
+  std::vector<Op> _ops{};                               // List of operations
 };
 
-#define ADD_SINGLE_QUBIT_GATE_FUNCTION(func_name, gate_name)                   \
+#define ADD_SINGLE_QUBIT_FIXED_GATE(func_name, gate_name)                      \
   void Circuit::func_name(const uint32_t qubit) {                              \
     _ops.push_back(Op(#gate_name, {qubit}));                                   \
   }
+ADD_SINGLE_QUBIT_FIXED_GATE(id, Id)
+ADD_SINGLE_QUBIT_FIXED_GATE(h, H)
+ADD_SINGLE_QUBIT_FIXED_GATE(x, X)
+ADD_SINGLE_QUBIT_FIXED_GATE(y, Y)
+ADD_SINGLE_QUBIT_FIXED_GATE(z, Z)
+ADD_SINGLE_QUBIT_FIXED_GATE(t, T)
+ADD_SINGLE_QUBIT_FIXED_GATE(tdg, Tdg)
+ADD_SINGLE_QUBIT_FIXED_GATE(s, S)
+ADD_SINGLE_QUBIT_FIXED_GATE(sdg, Sdg)
+ADD_SINGLE_QUBIT_FIXED_GATE(sx, SX)
+ADD_SINGLE_QUBIT_FIXED_GATE(sxdg, SXdg)
+ADD_SINGLE_QUBIT_FIXED_GATE(sy, SY)
+ADD_SINGLE_QUBIT_FIXED_GATE(sydg, SYdg)
+ADD_SINGLE_QUBIT_FIXED_GATE(w, W)
+ADD_SINGLE_QUBIT_FIXED_GATE(sw, SW)
+#undef ADD_SINGLE_QUBIT_FIXED_GATE
 
-ADD_SINGLE_QUBIT_GATE_FUNCTION(id, Id)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(h, H)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(x, X)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(y, Y)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(z, Z)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(t, T)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(tdg, Tdg)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(s, S)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(sdg, Sdg)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(sx, SX)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(sxdg, SXdg)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(w, W)
-ADD_SINGLE_QUBIT_GATE_FUNCTION(sw, SW)
+#define ADD_SINGLE_QUBIT_PARAM_GATE(func_name, gate_name)                      \
+  void Circuit::func_name(const uint32_t qubit, const double theta) {          \
+    _ops.push_back(Op(#gate_name, {qubit}, {}, {theta}));                      \
+  }
+ADD_SINGLE_QUBIT_PARAM_GATE(rx, RX);
+ADD_SINGLE_QUBIT_PARAM_GATE(ry, RZ);
+ADD_SINGLE_QUBIT_PARAM_GATE(rz, RZ);
+ADD_SINGLE_QUBIT_PARAM_GATE(p, P);
+#undef ADD_SINGLE_QUBIT_PARAM_GATE
 
-#undef ADD_SINGLE_QUBIT_GATE_FUNCTION
-
+#define ADD_DOUBLE_QUBIT_FIXED_GATE(func_name, gate_name)                      \
+  void Circuit::func_name(const uint32_t ctrl, const uint32_t targ) {          \
+    _ops.push_back(Op(#gate_name, {ctrl, targ}));                              \
+  }
+ADD_DOUBLE_QUBIT_FIXED_GATE(cnot, CX);
+ADD_DOUBLE_QUBIT_FIXED_GATE(cx, CX);
+ADD_DOUBLE_QUBIT_FIXED_GATE(cy, CY);
+ADD_DOUBLE_QUBIT_FIXED_GATE(cz, CZ);
+ADD_DOUBLE_QUBIT_FIXED_GATE(cs, CS);
+ADD_DOUBLE_QUBIT_FIXED_GATE(ct, CT);
+#undef ADD_DOUBLE_QUBIT_FIXED_GATE
 // TODO(zhaoyilun): finish other gates
 
 void Circuit::measure(const std::vector<uint32_t> &qubit_list,
                       const std::vector<uint32_t> &cbit_list) {
   if (qubit_list.empty() && cbit_list.empty()) {
-    for (uint32_t i = 0; i < this->num_qubits; ++i) {
-      this->measures.push_back(std::make_pair(i, i));
+    for (uint32_t i = 0; i < _num_qubits; ++i) {
+      _measures.push_back(std::make_pair(i, i));
     }
-    std::vector<uint32_t> buffer(this->num_qubits);
+    std::vector<uint32_t> buffer(_num_qubits);
     std::iota(buffer.begin(), buffer.end(), 0);
     _ops.push_back(Op("Measure", buffer, buffer));
     return;
@@ -131,7 +155,7 @@ void Circuit::measure(const std::vector<uint32_t> &qubit_list,
   }
 
   for (size_t i = 0; i < qubit_list.size(); ++i) {
-    this->measures.push_back(std::make_pair(qubit_list[i], cbit_list[i]));
+    _measures.push_back(std::make_pair(qubit_list[i], cbit_list[i]));
   }
   _ops.push_back(Op("Measure", qubit_list, cbit_list));
 }

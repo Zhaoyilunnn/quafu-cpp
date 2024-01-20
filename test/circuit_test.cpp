@@ -11,8 +11,7 @@ const std::string SAMPLE_2Q = "OPENQASM 2.0;\n"
                               "measure q[1] -> meas[1];\n";
 
 TEST(CircuitTest, to_qasm) {
-  auto qc = quafu::Circuit();
-  qc.num_qubits = 2;
+  auto qc = quafu::Circuit(2);
   qc.x(0);
   qc.h(1);
   qc.measure();
