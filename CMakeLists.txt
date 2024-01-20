@@ -49,15 +49,15 @@ FetchContent_MakeAvailable(googletest)
 
 
 ##### Compilation settings #####
-add_library(${PROJECT_NAME} STATIC src/client.cpp)
+add_library(${PROJECT_NAME} INTERFACE)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_BINARY_DIR}/include)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC cpr::cpr)
-target_link_libraries(${PROJECT_NAME} PUBLIC nlohmann_json::nlohmann_json)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC absl::strings)
+target_link_libraries(${PROJECT_NAME} INTERFACE cpr::cpr)
+target_link_libraries(${PROJECT_NAME} INTERFACE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} INTERFACE ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${PROJECT_NAME} INTERFACE absl::strings)
 
 ##### Quafu tool #####
 add_executable(quafu++ src/tool.cpp)
