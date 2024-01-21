@@ -49,19 +49,26 @@ FetchContent_MakeAvailable(googletest)
 
 
 ##### Compilation settings #####
-add_library(${PROJECT_NAME} STATIC src/dummy.cpp)
+add_library(${PROJECT_NAME} INTERFACE)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_BINARY_DIR}/include)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE cpr::cpr)
-target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${QPP_LINK_DEPS} libqpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE absl::strings)
+target_link_libraries(${PROJECT_NAME} INTERFACE cpr::cpr)
+target_link_libraries(${PROJECT_NAME} INTERFACE nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} INTERFACE ${QPP_LINK_DEPS} libqpp)
+target_link_libraries(${PROJECT_NAME} INTERFACE absl::strings)
 
 ##### Quafu tool #####
 add_executable(quafu++ src/tool.cpp)
 target_link_libraries(quafu++ gflags::gflags)
+
+##### Misc #####
+# Fix: https://github.com/libcpr/cpr/issues/1017
+if((${CMAKE_BUILD_TYPE} STREQUAL "Debug") AND (NOT ${BUILD_QUAFU_TEST}))
+    string(REPLACE "-D_GLIBCXX_DEBUG" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    message(STATUS "Debug flags: ${CMAKE_CXX_FLAGS_DEBUG}")
+endif()
 
 ##### Unit test settings #####
 
@@ -82,25 +89,20 @@ if (BUILD_QUAFU_TEST)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     include_directories(${CMAKE_BINARY_DIR}/include)
 
-    target_link_libraries(${OP_TEST} PUBLIC cpr::cpr)
-    target_link_libraries(${OP_TEST} PUBLIC nlohmann_json::nlohmann_json)
-    target_link_libraries(${OP_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-    target_link_libraries(${OP_TEST} PUBLIC absl::strings)
-    target_link_libraries(${OP_TEST} PUBLIC gtest_main)
-    target_link_libraries(${CIRCUIT_TEST} PUBLIC cpr::cpr)
-    target_link_libraries(${CIRCUIT_TEST} PUBLIC nlohmann_json::nlohmann_json)
-    target_link_libraries(${CIRCUIT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-    target_link_libraries(${CIRCUIT_TEST} PUBLIC absl::strings)
-    target_link_libraries(${CIRCUIT_TEST} PUBLIC gtest_main)
-    target_link_libraries(${CLIENT_TEST} PUBLIC cpr::cpr)
-    target_link_libraries(${CLIENT_TEST} PUBLIC nlohmann_json::nlohmann_json)
-    target_link_libraries(${CLIENT_TEST} PUBLIC ${QPP_LINK_DEPS} libqpp)
-    target_link_libraries(${CLIENT_TEST} PUBLIC absl::strings)
-    target_link_libraries(${CLIENT_TEST} PUBLIC gtest_main)
-    target_link_libraries(${CLIENT_TEST} PUBLIC gmock_main)
-    target_link_libraries(${CLIENT_TEST} PUBLIC ${PROJECT_NAME})
-    target_link_libraries(${RESULT_TEST} PUBLIC nlohmann_json::nlohmann_json)
-    target_link_libraries(${RESULT_TEST} PUBLIC gtest_main)
+    target_link_libraries(${OP_TEST} PRIVATE ${PROJECT_NAME})
+    target_link_libraries(${OP_TEST} PRIVATE gtest_main)
+
+    target_link_libraries(${CIRCUIT_TEST} PRIVATE ${PROJECT_NAME})
+    target_link_libraries(${CIRCUIT_TEST} PRIVATE gtest_main)
+
+    target_link_libraries(${CLIENT_TEST} PRIVATE nlohmann_json::nlohmann_json)
+    target_link_libraries(${CLIENT_TEST} PRIVATE cpr::cpr)
+    target_link_libraries(${CLIENT_TEST} PRIVATE gtest_main)
+    target_link_libraries(${CLIENT_TEST} PRIVATE gmock_main)
+
+
+    target_link_libraries(${RESULT_TEST} PRIVATE ${PROJECT_NAME})
+    target_link_libraries(${RESULT_TEST} PRIVATE gtest_main)
 
     include(GoogleTest)
     gtest_discover_tests(${OP_TEST})
