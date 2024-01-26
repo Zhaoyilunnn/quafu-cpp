@@ -32,3 +32,9 @@ TEST(CircuitTest, to_qasm) {
   qc_01.measure();
   ASSERT_EQ(qc_01.to_qasm(), SAMPLE_2Q_01);
 }
+
+TEST(CircuitTest, build) {
+  auto qc = quafu::Circuit(2);
+  qc.x(0);
+  ASSERT_THROW(qc.h(2), quafu::CircuitException);
+}

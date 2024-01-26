@@ -62,6 +62,12 @@ int main(int argc, char **argv) {
 
 ```
 
+You can also directly submit your OpenQASM program to Quafu through
+
+```bash
+_deps/quafu-cpp-build/quafu++ --qasm <your-openqasm-program-file> --backend <name-of-quafu-quantum-chip>
+```
+
 
 ## Development
 

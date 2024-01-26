@@ -25,6 +25,11 @@ public:
   ResultException(const std::string &msg) : Exception(msg) {}
 };
 
+class CircuitException : public Exception {
+public:
+  CircuitException(const std::string &msg) : Exception(msg) {}
+};
+
 #define CHECK_WEBSITE_ERROR(return_code)                                       \
   if (return_code >= 500) {                                                    \
     throw BackendException("Something wrong with Quafu website, please "       \

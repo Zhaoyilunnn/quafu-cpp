@@ -1,5 +1,6 @@
 #pragma once
 
+#include "exceptions.hpp"
 #include "operation.hpp"
 #include <unordered_map>
 
@@ -90,8 +91,17 @@ private:
   std::vector<Op> _ops{};                               // List of operations
 };
 
+#define CHECK_QUBIT_OVERFLOW(qubits)                                           \
+  for (const auto &q : qubits) {                                               \
+    if (q >= _num_qubits) {                                                    \
+      throw CircuitException(                                                  \
+          "qubit index exceeds the number of qubits in circuit");              \
+    }                                                                          \
+  }
+
 #define ADD_SINGLE_QUBIT_FIXED_GATE(func_name, gate_name)                      \
   void Circuit::func_name(const uint32_t qubit) {                              \
+    CHECK_QUBIT_OVERFLOW({qubit});                                             \
     _ops.push_back(Op(#gate_name, {qubit}));                                   \
   }
 ADD_SINGLE_QUBIT_FIXED_GATE(id, Id)
@@ -113,6 +123,7 @@ ADD_SINGLE_QUBIT_FIXED_GATE(sw, SW)
 
 #define ADD_SINGLE_QUBIT_PARAM_GATE(func_name, gate_name)                      \
   void Circuit::func_name(const uint32_t qubit, const double theta) {          \
+    CHECK_QUBIT_OVERFLOW({qubit});                                             \
     _ops.push_back(Op(#gate_name, {qubit}, {}, {theta}));                      \
   }
 ADD_SINGLE_QUBIT_PARAM_GATE(rx, RX);
@@ -123,7 +134,9 @@ ADD_SINGLE_QUBIT_PARAM_GATE(p, P);
 
 #define ADD_DOUBLE_QUBIT_FIXED_GATE(func_name, gate_name)                      \
   void Circuit::func_name(const uint32_t ctrl, const uint32_t targ) {          \
-    _ops.push_back(Op(#gate_name, {ctrl, targ}));                              \
+    auto qubits = {ctrl, targ};                                                \
+    CHECK_QUBIT_OVERFLOW(qubits);                                              \
+    _ops.push_back(Op(#gate_name, qubits));                                    \
   }
 ADD_DOUBLE_QUBIT_FIXED_GATE(cnot, CX);
 ADD_DOUBLE_QUBIT_FIXED_GATE(cx, CX);
