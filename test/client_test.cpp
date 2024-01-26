@@ -15,8 +15,13 @@ public:
               (override));
 };
 
+class TestClient : public quafu::Client {
+protected:
+  void _load_credential() override { return; }
+};
+
 TEST(ClientTest, load_account) {
-  auto &client = quafu::Client::get_instance();
+  auto client = TestClient();
   auto mock_post = std::make_shared<MockCprWrapper>();
   client.set_cpr_wrapper(mock_post);
 

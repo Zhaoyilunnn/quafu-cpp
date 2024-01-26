@@ -39,7 +39,7 @@ class Client {
 
 public:
   static Client &get_instance() {
-    static Client instance; // For lazy initialization
+    thread_local Client instance; // For lazy initialization
     instance.set_cpr_wrapper(std::make_shared<CprWrapper>());
     return instance;
   }
@@ -86,18 +86,20 @@ public:
 
   void set_backend(const std::string &backend_name) {
     if (_backends.find(backend_name) == _backends.end()) {
-      // Exception handling
-      std::cout << "Unsupported backend name: " << backend_name << std::endl;
-      return;
+      throw Exception("Unsupported backend name " + backend_name +
+                      ", have you called load_account()?");
     }
     _backend_name = backend_name;
   }
 
-private:
+protected:
   Client() {}
 
   // Wrapper of CPR
   std::shared_ptr<ICprWrapper> _cpr_wrapper = nullptr;
+
+  // Load credential from filesystem
+  virtual void _load_credential();
 
   // Call website to get quantum backends information
   void _get_backends();
@@ -115,7 +117,19 @@ private:
   std::string _backend_name = "ScQ-P10";
 };
 
-void Client::load_account() {
+void Client::_get_backends() {
+  auto header = cpr::Header{{"api_token", _api_token}};
+  auto url = cpr::Url(_website + API_BACKENDS);
+  auto r = _cpr_wrapper->Post(url, header);
+  CHECK_WEBSITE_ERROR(r.status_code);
+  // Populate backend information
+  auto backends_json = nlohmann::json::parse(r.text);
+  for (const auto &b : backends_json["data"]) {
+    _backends.emplace(b["system_name"], b);
+  }
+}
+
+void Client::_load_credential() {
   std::ifstream config(CRED_PATH);
 
   // Load api token and website configuration
@@ -127,21 +141,13 @@ void Client::load_account() {
     throw Exception(
         "Failed to open credential file, please config through quafu++");
   }
-
-  // Fetch available backends information from website
-  _get_backends();
 }
 
-void Client::_get_backends() {
-  auto header = cpr::Header{{"api_token", _api_token}};
-  auto url = cpr::Url(_website + API_BACKENDS);
-  auto r = _cpr_wrapper->Post(url, header);
-  CHECK_WEBSITE_ERROR(r.status_code);
-  // Populate backend information
-  auto backends_json = nlohmann::json::parse(r.text);
-  for (const auto &b : backends_json["data"]) {
-    _backends.emplace(b["system_name"], b);
-  }
+void Client::load_account() {
+  // Load api token and website url
+  _load_credential();
+  // Fetch available backends information from website
+  _get_backends();
 }
 
 Result Client::execute(const std::string &qasm, const std::string &name,

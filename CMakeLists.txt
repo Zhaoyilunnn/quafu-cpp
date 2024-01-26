@@ -62,6 +62,7 @@ target_link_libraries(${PROJECT_NAME} INTERFACE absl::strings)
 ##### Quafu tool #####
 add_executable(quafu++ src/tool.cpp)
 target_link_libraries(quafu++ gflags::gflags)
+target_link_libraries(quafu++ ${PROJECT_NAME})
 
 ##### Misc #####
 # Fix: https://github.com/libcpr/cpr/issues/1017
