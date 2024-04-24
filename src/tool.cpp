@@ -35,6 +35,7 @@ void exec_qasm() {
   auto &client = quafu::Client::get_instance();
   client.load_account();
   client.set_backend(FLAGS_backend);
+  client.set_compile(true);
   std::ifstream qasm(FLAGS_qasm.c_str());
   std::stringstream buffer;
 
