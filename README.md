@@ -1,6 +1,6 @@
 # Quafu C++ SDK
 
-`quafu-cpp` is a lightweight library for easily submission of quantum circuits to [Quafu cloud platform](https://quafu.baqis.ac.cn/)
+`quafu-cpp` is a lightweight library enabling easy submission of quantum circuits to [Quafu cloud platform](https://quafu.baqis.ac.cn/).
 
 ## Prerequisite
 
