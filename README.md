@@ -1,12 +1,49 @@
 # Quafu C++ SDK
 
-## Integration
+`quafu-cpp` is a lightweight library for easily submission of quantum circuits to [Quafu cloud platform](https://quafu.baqis.ac.cn/)
+
+## Prerequisite
+
+`quafu-cpp` depends on [CPR](https://github.com/libcpr/cpr/). While CPR is automatically downloaded, you may still need to install `OpenSSL` development package, see [requirement of CPR](https://github.com/libcpr/cpr/tree/d47fd882f2da52ddcf6eef7a934d796c15623496?tab=readme-ov-file#requirements).
+
+For example, on Ubuntu system, you could install `libssl-dev`
+
+```
+sudo apt-get update
+sudo apt-get install libssl-dev
+```
+
+## Build
+
+
+This project can be built and tested as follows.
+
+```
+git clone https://github.com/Zhaoyilunnn/quafu-cpp.git
+cd quafu-cpp
+mkdir build && cd build
+cmake ..
+make -j 8
+```
+
+To build unit tests
+
+```
+cmake .. -DBUILD_QUAFU_TEST=ON
+make -j 8
+make test
+```
+
+## Install
+
 
 ### CMake
 
-Since CMake v3.11, [FetchContent](https://cmake.org/cmake/help/v3.11/module/FetchContent.html) can be used to automatically download a release as a dependency at configure time.
 
-Example
+Since [CMake](https://cmake.org/) v3.11, [FetchContent](https://cmake.org/cmake/help/v3.11/module/FetchContent.html) can be used to automatically download a release as a dependency at configure time.
+
+To use `quafu-cpp` in your project, you could simply declare dependency on this library as follows.
+
 ```cmake
 
 include(FetchContent)
@@ -20,7 +57,6 @@ target_link_libraries(foo quafu_cpp)
 
 ```
 
-To build unit tests of quafu_cpp, use `-DQUAFU_BUILD_TEST=On`.
 
 Please also refer to [01_Simple](https://github.com/Zhaoyilunnn/quafu-cpp/tree/main/examples/01_simple).
 
