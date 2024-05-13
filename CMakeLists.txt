@@ -47,10 +47,16 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 
+# Python
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
+include_directories(${Python_INCLUDE_DIRS})
+
+
 
 ##### Compilation settings #####
 add_library(${PROJECT_NAME} INTERFACE)
 
+# target_include_directories(${PROJECT_NAME} INTERFACE ${Python_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_BINARY_DIR}/include)
 
@@ -58,11 +64,13 @@ target_link_libraries(${PROJECT_NAME} INTERFACE cpr::cpr)
 target_link_libraries(${PROJECT_NAME} INTERFACE nlohmann_json::nlohmann_json)
 target_link_libraries(${PROJECT_NAME} INTERFACE ${QPP_LINK_DEPS} libqpp)
 target_link_libraries(${PROJECT_NAME} INTERFACE absl::strings)
+target_link_libraries(${PROJECT_NAME} INTERFACE ${Python_LIBRARIES})
 
 ##### Quafu tool #####
 add_executable(quafu++ src/tool.cpp)
 target_link_libraries(quafu++ gflags::gflags)
 target_link_libraries(quafu++ ${PROJECT_NAME})
+target_link_libraries(quafu++ ${Python_LIBRARIES})
 
 ##### Misc #####
 # Fix: https://github.com/libcpr/cpr/issues/1017

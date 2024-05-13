@@ -1,7 +1,18 @@
 #pragma once
 
+#include "Python.h"
+#include "abstract.h"
+#include "import.h"
+#include "longobject.h"
+#include "object.h"
+#include "pylifecycle.h"
+#include "pythonrun.h"
+#include "tupleobject.h"
+#include "unicodeobject.h"
+
 #include "exceptions.hpp"
 #include "operation.hpp"
+#include <iostream>
 #include <unordered_map>
 
 namespace quafu {
@@ -84,6 +95,8 @@ public:
 
     return qasm_str;
   }
+
+  void draw_circuit();
 
 private:
   uint32_t _num_qubits = 0;                             // number of qubits
@@ -173,4 +186,31 @@ void Circuit::measure(const std::vector<uint32_t> &qubit_list,
   _ops.push_back(Op("Measure", qubit_list, cbit_list));
 }
 
+// FIXME: just a temporary impl based on pyquafu
+void Circuit::draw_circuit() {
+  Py_Initialize();
+  PyObject *quafu_module_str = PyUnicode_FromString("quafu");
+  PyObject *quafu_module = PyImport_Import(quafu_module_str);
+  Py_DecRef(quafu_module_str);
+  PyObject *qc_class = PyObject_GetAttrString(quafu_module, "QuantumCircuit");
+  PyObject *qc_class_args = PyTuple_New(1);
+  PyTuple_SetItem(qc_class_args, 0, PyLong_FromLong(1));
+  PyObject *qc_instance = PyObject_CallObject(qc_class, qc_class_args);
+  Py_DecRef(qc_class_args);
+  PyObject *from_qasm_args = PyTuple_New(1);
+  PyObject *py_qasm_str = PyUnicode_FromString(to_qasm().c_str());
+  PyObject *res_from_qasm =
+      PyObject_CallMethod(qc_instance, "from_openqasm", "O", py_qasm_str);
+  if (nullptr == res_from_qasm) {
+    PyErr_Print();
+  }
+  Py_DecRef(py_qasm_str);
+  PyObject *res_draw_circ =
+      PyObject_CallMethod(qc_instance, "draw_circuit", "OO", PyLong_FromLong(4),
+                          PyBool_FromLong(false));
+  Py_DecRef(qc_instance);
+  Py_DecRef(res_from_qasm);
+  Py_DecRef(res_draw_circ);
+  Py_Finalize();
+}
 } // namespace quafu

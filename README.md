@@ -34,6 +34,11 @@ make -j 8
 make test
 ```
 
+Build with customized python path
+```bash
+cmake .. -DPython_ROOT_DIR=<path-to-your-python-root>
+```
+
 ## Install
 
 
