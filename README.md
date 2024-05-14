@@ -4,6 +4,8 @@
 
 ## Prerequisite
 
+### CPR
+
 `quafu-cpp` depends on [CPR](https://github.com/libcpr/cpr/). While CPR is automatically downloaded, you may still need to install `OpenSSL` development package, see [requirement of CPR](https://github.com/libcpr/cpr/tree/d47fd882f2da52ddcf6eef7a934d796c15623496?tab=readme-ov-file#requirements).
 
 For example, on Ubuntu system, you could install `libssl-dev`
@@ -12,6 +14,11 @@ For example, on Ubuntu system, you could install `libssl-dev`
 sudo apt-get update
 sudo apt-get install libssl-dev
 ```
+
+### QPP
+
+Install QPP following the [installation guide](https://github.com/softwareQinc/qpp/blob/0753d9e946b2254ad62ac21c152401103e2e8b39/INSTALL.md)
+
 
 ## Build
 
