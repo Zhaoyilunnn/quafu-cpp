@@ -9,6 +9,7 @@
 DEFINE_string(api_token, "", "API Token for authentication");
 DEFINE_string(qasm, "", "qasm file path");
 DEFINE_string(backend, "ScQ-P10", "quantum system name to execute qasm");
+DEFINE_int32(async, 0, "whether to submit circuit asynchronously");
 
 void save_api_token() {
   // Credential file path
@@ -44,7 +45,7 @@ void exec_qasm() {
     buffer << qasm.rdbuf();
     qasm.close();
     std::string qasm_str = buffer.str();
-    auto r = client.execute(qasm_str);
+    auto r = client.execute(qasm_str, "", FLAGS_async);
     std::cout << r.counts() << std::endl;
   } else {
     std::cerr << "Unable to open file: " << FLAGS_qasm << std::endl;
