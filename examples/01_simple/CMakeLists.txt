@@ -18,6 +18,10 @@ FetchContent_Declare(quafu-cpp
     GIT_TAG main)
 FetchContent_MakeAvailable(quafu-cpp)
 
+# Python
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
+include_directories(${Python_INCLUDE_DIRS})
+
 
 ##### Compilation settings #####
 set(BIN 01_simple)

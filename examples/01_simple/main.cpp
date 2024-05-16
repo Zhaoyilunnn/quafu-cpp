@@ -11,6 +11,7 @@ int main() {
   qc.h(0);
   qc.cnot(0, 1);
   qc.measure();
+  qc.draw_circuit();
   std::cout << qc.to_qasm() << std::endl;
   // auto r = client.execute(qc.to_qasm());
   // std::cout << r.counts() << std::endl;
